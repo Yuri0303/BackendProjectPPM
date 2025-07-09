@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Weather Forecast</title>
+</head>
+<body>
+<h1>Free Weather Forecast</h1>
+<form id="forecast-form">
+    <label>Location:
+        <input type="text" name="location">
+    </label><br>
+    <label>Date:
+        <input type="date" name="date">
+    </label>
+    <label>Time:
+        <input type="time" name="time">
+    </label><br>
+    <button type="submit">Get Forecast</button>
+</form>
+
+<h2>Result:</h2>
+<pre id="result"></pre>
+
+<p>
+    Do you have an account?
+    <a href="login.html">Login</a>
+</p>
+<p>
+    If you don't, you can register!
+    <a href="register.html">Register</a>
+</p>
+<script>
+    document.getElementById("forecast-form").addEventListener("submit", async (e) => {
+        e.preventDefault()
+
+        const form = e.target;
+        const location = form.location.value.trim();
+        const date = form.date.value;
+        const time = form.time.value;
+
+        const resultDiv = document.getElementById("result");
+        resultDiv.textContent = "Caricamento...";
+
+        const params = new URLSearchParams({
+            location: location,
+            date: date,
+            time: time
+        });
+
+        try {
+            const response = await fetch(`http://localhost:5000/api/forecast?${params.toString()}`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            })
+
+            const data = await response.json();
+            if (!response.ok) {
+                resultDiv.textContent = `Error: ${data.error || data.msg || 'Failed request: no more details...'}`
+            } else{
+                resultDiv.textContent = JSON.stringify(data, null, 2);
+            }
+        } catch (err) {
+            debugger
+            resultDiv.textContent = "Network error or server not available";
+            console.error(err);
+        }
+    })
+</script>
+</body>
+</html>
