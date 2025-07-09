@@ -9,26 +9,26 @@ bp = Blueprint('auth', __name__, url_prefix='/auth')
 @bp.route('/register', methods=['POST'])
 def register():
     data = request.form
-    username = data['username']
-    password = data['password']
+    username = data.get('username')
+    password = data.get('password')
 
     if not username or not password:
         return jsonify({'error': 'Missing username or password'}), 400
 
-    if User.query.filter_by(username=username).first():
+    if not User.query.filter_by(username=username).first() is None:
         return jsonify({'error': 'User already exist'}), 409
 
     user = User(username=username)
     user.set_password(password)
     db.session.add(user)
     db.session.commit()
-    return jsonify({'message': 'User created successfully'}), 201
+    return jsonify({'msg': 'User created successfully'}), 201
 
 @bp.route('/login', methods=['POST'])
 def login():
     data = request.form
-    username = data['username']
-    password = data['password']
+    username = data.get('username')
+    password = data.get('password')
 
     if not username or not password:
         return jsonify({'error': 'Missing username or password'}), 400
@@ -37,5 +37,5 @@ def login():
     if not user or not user.check_password(password):
         return jsonify({'error': 'Wrong username or password'}), 401
 
-    access_token = create_access_token(identity=user.id)
+    access_token = create_access_token(identity=str(user.id))
     return jsonify({'access token': access_token, 'type': user.type}), 200

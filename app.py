@@ -2,6 +2,7 @@ from flask import Flask, jsonify
 from flask_jwt_extended import JWTManager
 from db import db
 from auth.routes import bp as auth_bp
+from forecast_api.routes import bp as forecast_bp
 import secrets
 
 app = Flask(__name__)
@@ -14,6 +15,7 @@ jwt = JWTManager(app)
 db.init_app(app)
 
 app.register_blueprint(auth_bp)
+app.register_blueprint(forecast_bp)
 
 with app.app_context():
     db.create_all()

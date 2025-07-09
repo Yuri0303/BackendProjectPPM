@@ -8,4 +8,4 @@ class Location(db.Model):
     lat: Mapped[float] = mapped_column(nullable=False)
     lon: Mapped[float] = mapped_column(nullable=False)
 
-    forecasts = relationship('Forecast', back_populates='location')
+    forecasts = relationship('Forecast', backref='location')
