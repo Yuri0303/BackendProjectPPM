@@ -14,6 +14,39 @@
         </label><br>
         <button type="submit">Login</button>
     </form>
+<div id="error-div"></div>
 
+<script>
+    const form = document.getElementById("login-form");
+    const errorDiv = document.getElementById("error-div");
+
+    form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const username = form.username.value.trim();
+        const password = form.password.value.trim();
+
+        try {
+            const response = await fetch("http://localhost:5000/auth/login", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({username, password})
+            });
+            const data = await response.json();
+
+            if (response.ok && data.access_token) {
+                localStorage.setItem("access_token", data.access_token);
+                window.location.href = "dashboard.html"
+            } else {
+                errorDiv.textContent = data.msg || "Login failed: no more details..."
+            }
+        } catch (err) {
+            errorDiv.textContent = "Network error or server not available";
+            console.error(err);
+        }
+    })
+</script>
 </body>
 </html>

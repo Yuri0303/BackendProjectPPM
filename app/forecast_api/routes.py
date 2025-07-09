@@ -139,3 +139,11 @@ def add_location():
     db.session.commit()
 
     return jsonify({'msg': 'Location added successfully'}), 201
+
+@bp.route('/userinfo')
+@jwt_required()
+def user_info():
+    user_id = get_jwt_identity()
+    user = User.query.filter_by(id=user_id).first()
+
+    return jsonify(to_dict(user)), 200
