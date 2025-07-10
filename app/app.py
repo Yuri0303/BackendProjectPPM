@@ -19,7 +19,7 @@ db.init_app(app)
 app.register_blueprint(auth_bp)
 app.register_blueprint(forecast_bp)
 
-CORS(app, supports_credentials=True, origins=['https://yuri0303.github.io'])
+CORS(app, supports_credentials=True, origins='*')
 
 with app.app_context():
     db.create_all()
