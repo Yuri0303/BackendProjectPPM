@@ -59,7 +59,8 @@
 
         try {
             const response = await fetch(`${API_BASE_URL}/api/forecast?${params.toString()}`, {
-                method: "GET"
+                method: "GET",
+                mode: "cors"
             });
 
             const data = await response.json();
