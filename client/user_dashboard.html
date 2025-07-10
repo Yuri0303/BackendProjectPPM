@@ -27,6 +27,7 @@
 <button onclick="logout()">Logout</button>
 <div id="error"></div>
 
+<script src="config.js"></script>
 <script>
     const token = localStorage.getItem("access_token");
     const errorDiv = document.getElementById("error");
@@ -34,7 +35,7 @@
     window.addEventListener("DOMContentLoaded", async () => {
         if (token) {
             try {
-                const response = await fetch("http://localhost:5000/api/userinfo", {
+                const response = await fetch(`${API_BASE_URL}/api/userinfo`, {
                     headers: {
                         Authorization: `Bearer ${token}`
                     }
@@ -79,7 +80,7 @@
         resultDiv.textContent = "Caricamento...";
 
         try {
-            const response = await fetch(`http://localhost:5000/api/forecast?${params.toString()}`, {
+            const response = await fetch(`${API_BASE_URL}/api/forecast?${params.toString()}`, {
                 method: "Get",
                 headers: {
                     "Authorization": `Bearer ${token}`
@@ -101,7 +102,7 @@
 
     document.getElementById("load-queries").addEventListener("click", async () => {
         try {
-            const response = await fetch("http://localhost:5000/api/savedQueries", {
+            const response = await fetch(`${API_BASE_URL}/api/savedQueries`, {
                 headers: {
                     "Authorization": `Bearer ${token}`
                 }

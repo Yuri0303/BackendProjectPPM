@@ -16,6 +16,8 @@
     </form>
 <div id="error-div"></div>
 <p>Don't have an account?<a href="register.html"> Register</a></p>
+
+<script src="config.js"></script>
 <script>
     const form = document.getElementById("login-form");
     const errorDiv = document.getElementById("error-div");
@@ -24,7 +26,7 @@
     window.addEventListener("DOMContentLoaded", async () => {
         if (token) {
             try {
-                const response = await fetch("http://localhost:5000/api/userinfo", {
+                const response = await fetch(`${API_BASE_URL}/api/userinfo`, {
                     headers: {
                         Authorization: `Bearer ${token}`
                     }
@@ -42,7 +44,7 @@
                     localStorage.removeItem("token");
                 }
             } catch (error) {
-                msgDiv.textContent = "Network error or server not available";
+                errorDiv.textContent = "Network error or server not available";
             }
         }
     });
@@ -54,7 +56,7 @@
         const password = form.password.value.trim();
 
         try {
-            const response = await fetch("http://localhost:5000/auth/login", {
+            const response = await fetch(`${API_BASE_URL}/auth/login`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
@@ -66,7 +68,7 @@
             if (response.ok && data.access_token) {
                 localStorage.setItem("access_token", data.access_token);
 
-                await fetch('http://localhost:5000/api/userinfo', {
+                await fetch(`${API_BASE_URL}/api/userinfo`, {
                     method: "GET",
                     headers: {
                         "Authorization": "Bearer " + localStorage.getItem("access_token")

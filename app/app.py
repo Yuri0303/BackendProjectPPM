@@ -5,7 +5,6 @@ from db import db
 from models.user import create_admin
 from auth.routes import bp as auth_bp
 from forecast_api.routes import bp as forecast_bp
-import secrets
 import os
 
 app = Flask(__name__)
@@ -20,7 +19,7 @@ db.init_app(app)
 app.register_blueprint(auth_bp)
 app.register_blueprint(forecast_bp)
 
-CORS(app)
+CORS(app, supports_credentials=True)
 
 with app.app_context():
     db.create_all()

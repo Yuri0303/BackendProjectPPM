@@ -43,6 +43,7 @@
 <button onclick="logout()">Logout</button>
 <div id="message"></div>
 
+<script src="config.js"></script>
 <script>
     const token = localStorage.getItem("access_token");
     const msgDiv = document.getElementById("message");
@@ -50,7 +51,7 @@
     window.addEventListener("DOMContentLoaded", async () => {
         if (token) {
             try {
-                const response = await fetch("http://localhost:5000/api/userinfo", {
+                const response = await fetch(`${API_BASE_URL}/api/userinfo`, {
                     headers: {
                         Authorization: `Bearer ${token}`
                     }
@@ -91,7 +92,7 @@
         const lon = form.lon.value;
 
         try {
-            const response = await fetch("http://localhost:5000/api/location", {
+            const response = await fetch(`${API_BASE_URL}/api/location`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -121,7 +122,7 @@
         const rain = form.rain.value;
 
         try {
-            const response = await fetch("http://localhost:5000/api/forecast", {
+            const response = await fetch(`${API_BASE_URL}/api/forecast`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
