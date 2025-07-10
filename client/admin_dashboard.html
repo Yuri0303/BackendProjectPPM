@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard</title>
+</head>
+<body>
+<h2>Add location:</h2>
+<form id="location-form">
+    <label>Name
+        <input type="text" name="name">
+    </label><br>
+    <label>Latitude
+        <input type="number" step="any" name="lat">
+    </label><br>
+    <label>Longitude
+        <input type="number" step="any" name="lon">
+    </label><br>
+    <button type="submit">Add location</button>
+</form>
+<h2>Add forecast:</h2>
+<form id="forecast-form">
+    <label>Location
+        <input type="text" name="location">
+    </label><br>
+    <label>Date
+        <input type="date" name="date">
+    </label><br>
+    <label>Time
+        <input type="time" name="time">
+    </label><br>
+    <label>Temperature
+        <input type="number" step="any" name="temperature">
+    </label><br>
+    <label>Condition
+        <input type="text" name="condition">
+    </label><br>
+    <label>Rain
+        <input type="number" step="any" name="rain">
+    </label><br>
+    <button type="submit">Add</button>
+</form><br>
+<button onclick="logout()">Logout</button>
+<div id="message"></div>
+
+<script>
+    const token = localStorage.getItem("access_token");
+    const msgDiv = document.getElementById("message");
+
+    window.addEventListener("DOMContentLoaded", async () => {
+        if (token) {
+            try {
+                const response = await fetch("http://localhost:5000/api/userinfo", {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    localStorage.removeItem("token");
+                    msgDiv.textContent = data.msg || data.error || "No more details..."
+                    const br = document.createElement("br");
+                    msgDiv.appendChild(br)
+                    const span = document.createElement("span");
+                    span.textContent = "Please login again  ";
+                    msgDiv.appendChild(span);
+                    const a = document.createElement("a");
+                    a.href = "login.html";
+                    a.textContent = "Login";
+                    msgDiv.appendChild(a);
+                }
+            } catch (error) {
+                msgDiv.textContent = "Network error or server not available";
+            }
+        }
+    });
+
+    function logout() {
+      localStorage.removeItem("access_token");
+      window.location.href = "index.html";
+    }
+
+    document.getElementById("location-form").addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const form = e.target;
+        const name = form.name.value;
+        const lat = form.lat.value;
+        const lon = form.lon.value;
+
+        try {
+            const response = await fetch("http://localhost:5000/api/location", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`
+            },
+            body: JSON.stringify({name, lat, lon})
+            });
+
+            const data = await response.json();
+
+            msgDiv.textContent = data.msg || data.error || "No more details...";
+        } catch (err) {
+            msgDiv.textContent = "Network error or server not available";
+        }
+    });
+
+    document.getElementById("forecast-form").addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const form = e.target;
+
+        const location = form.location.value;
+        const date = form.date.value;
+        const time = form.time.value;
+        const temperature = form.temperature.value;
+        const condition = form.condition.value;
+        const rain = form.rain.value;
+
+        try {
+            const response = await fetch("http://localhost:5000/api/forecast", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`
+            },
+            body: JSON.stringify({location, date, time, temperature, condition, rain})
+        });
+
+        const data = await response.json();
+
+        msgDiv.textContent = data.msg || data.error || "No more details...";
+        } catch (err) {
+            msgDiv.textContent = "Network error or server not available";
+            console.error(err);
+        }
+    })
+</script>
+</body>
+</html>

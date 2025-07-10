@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard</title>
+</head>
+<body>
+<h1>Get a forecast</h1>
+<form id="forecast-form">
+    <label>Location:
+        <input type="text" name="location">
+    </label><br>
+    <label>Date:
+        <input type="date" name="date">
+    </label><br>
+    <label>Time
+        <input type="time" name="time">
+    </label><br>
+    <button type="submit">Get forecast</button>
+</form>
+<h2>Result</h2>
+<pre id="result"></pre>
+<h2>Click to view your saved queries</h2>
+<button id="load-queries">Load queries</button>
+<ul id="queries"></ul>
+<h2>Logout</h2>
+<button onclick="logout()">Logout</button>
+<div id="error"></div>
+
+<script>
+    const token = localStorage.getItem("access_token");
+    const errorDiv = document.getElementById("error");
+
+    window.addEventListener("DOMContentLoaded", async () => {
+        if (token) {
+            try {
+                const response = await fetch("http://localhost:5000/api/userinfo", {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    localStorage.removeItem("token");
+                    errorDiv.textContent = data.msg || data.error || "No more details..."
+                    const br = document.createElement("br");
+                    errorDiv.appendChild(br)
+                    const span = document.createElement("span");
+                    span.textContent = "Please login again  ";
+                    errorDiv.appendChild(span);
+                    const a = document.createElement("a");
+                    a.href = "login.html";
+                    a.textContent = "Login";
+                    errorDiv.appendChild(a);
+                }
+            } catch (err) {
+                errorDiv.textContent = "Network error or server not available";
+            }
+        }
+    });
+
+    document.getElementById("forecast-form").addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const form = e.target
+        const location = form.location.value;
+        const date = form.date.value;
+        const time = form.time.value;
+
+        const params = new URLSearchParams({
+            location: location,
+            date: date,
+            time: time
+        });
+
+        const resultDiv = document.getElementById("result");
+        resultDiv.textContent = "Caricamento...";
+
+        try {
+            const response = await fetch(`http://localhost:5000/api/forecast?${params.toString()}`, {
+                method: "Get",
+                headers: {
+                    "Authorization": `Bearer ${token}`
+                },
+            });
+
+            const data = await response.json();
+            if (!response.ok) {
+                resultDiv.textContent = `Error: ${data.error || data.msg || 'Failed request: no more details...'}`
+            } else {
+                resultDiv.textContent = JSON.stringify(data, null, 2);
+            }
+        } catch (err) {
+
+            errorDiv.textContent = "Network error or server not available";
+            console.error(err);
+        }
+    });
+
+    document.getElementById("load-queries").addEventListener("click", async () => {
+        try {
+            const response = await fetch("http://localhost:5000/api/savedQueries", {
+                headers: {
+                    "Authorization": `Bearer ${token}`
+                }
+            });
+
+            const data = await response.json();
+            if (!response.ok) {
+                errorDiv.textContent = `Error: ${data.error || data.msg || "No more details..."}`;
+            } else {
+                const ul = document.getElementById("queries");
+                ul.innerHTML = "";
+
+                data.forEach(sq => {
+                    const li = document.createElement("li");
+                    li.textContent = JSON.stringify(sq, null, 2);
+                    ul.appendChild(li);
+                });
+            }
+        } catch (err) {
+            errorDiv.textContent = "Network error or server not available";
+            console.error(err);
+        }
+    });
+
+    function logout() {
+      localStorage.removeItem("access_token");
+      window.location.href = "index.html";
+    }
+</script>
+</body>
+</html>

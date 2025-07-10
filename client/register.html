@@ -5,6 +5,78 @@
     <title>Register your API account</title>
 </head>
 <body>
+<h1>Register</h1>
+<form id="register-form">
+    <label>Username
+        <input type="text" name="username">
+    </label><br>
+    <label>Password
+        <input type="password" name="password">
+    </label><br>
+    <button type="submit">Register</button>
+</form>
+<div id="message"></div>
+<p>Already have an account or you just created it?<a href="login.html"> Login</a></p>
 
+<script>
+    const token = localStorage.getItem("access_token");
+    const msgDiv = document.getElementById("message");
+
+    window.addEventListener("DOMContentLoaded", async () => {
+        if (token) {
+            try {
+                const response = await fetch("http://localhost:5000/api/userinfo", {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    if (data.is_admin) {
+                        window.location.href = "admin_dashboard.html";
+                    } else {
+                        window.location.href = "user_dashboard.html";
+                    }
+                } else {
+                    localStorage.removeItem("token");
+                }
+            } catch (error) {
+                msgDiv.textContent = "Network error or server not available";
+            }
+        }
+    });
+
+    document.getElementById("register-form").addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const form = e.target;
+        const username = form.username.value.trim();
+        const password = form.password.value.trim();
+
+        try {
+            const response = await fetch("http://localhost:5000/auth/register", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({username, password})
+            });
+
+            const data = await response.json();
+            if (!response.ok) {
+                msgDiv.textContent = `Error: ${data.msg || data.error || "No more details..."}`;
+                msgDiv.style.color = "red";
+            } else {
+                msgDiv.textContent = "User registered successfully";
+                msgDiv.style.color = "green";
+            }
+        } catch (err) {
+            msgDiv.textContent = "Network error or server not available";
+            console.error(err);
+        }
+    })
+</script>
 </body>
 </html>

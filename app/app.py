@@ -13,12 +13,13 @@ app.config['JWT_SECRET_KEY'] = secrets.token_hex(16)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 
 jwt = JWTManager(app)
-CORS(app)
 
 db.init_app(app)
 
 app.register_blueprint(auth_bp)
 app.register_blueprint(forecast_bp)
+
+CORS(app)
 
 with app.app_context():
     db.create_all()
@@ -30,8 +31,8 @@ def method_not_allowed(e):
     return jsonify({"error": "Method not allowed"}), 405
 
 @app.route('/')
-def hello_world():  # put application's code here
-    return 'Hello World!'
+def hello_world():
+    return jsonify({"msg": "Check documentation to start using Weather API"})
 
 
 if __name__ == '__main__':

@@ -15,10 +15,37 @@
         <button type="submit">Login</button>
     </form>
 <div id="error-div"></div>
-
+<p>Don't have an account?<a href="register.html"> Register</a></p>
 <script>
     const form = document.getElementById("login-form");
     const errorDiv = document.getElementById("error-div");
+    const token = localStorage.getItem("access_token")
+
+    window.addEventListener("DOMContentLoaded", async () => {
+        if (token) {
+            try {
+                const response = await fetch("http://localhost:5000/api/userinfo", {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    if (data.is_admin) {
+                        window.location.href = "admin_dashboard.html";
+                    } else {
+                        window.location.href = "user_dashboard.html";
+                    }
+                } else {
+                    localStorage.removeItem("token");
+                }
+            } catch (error) {
+                msgDiv.textContent = "Network error or server not available";
+            }
+        }
+    });
 
     form.addEventListener("submit", async (e) => {
         e.preventDefault();
@@ -38,9 +65,21 @@
 
             if (response.ok && data.access_token) {
                 localStorage.setItem("access_token", data.access_token);
-                window.location.href = "dashboard.html"
+
+                await fetch('http://localhost:5000/api/userinfo', {
+                    method: "GET",
+                    headers: {
+                        "Authorization": "Bearer " + localStorage.getItem("access_token")
+                    }
+                }).then(res => res.json()).then(user => {
+                    if (user.is_admin) {
+                        window.location.href = "admin_dashboard.html";
+                    } else {
+                        window.location.href = "user_dashboard.html";
+                    }
+                })
             } else {
-                errorDiv.textContent = data.msg || "Login failed: no more details..."
+                errorDiv.textContent = data.msg || "Login failed: no more details...";
             }
         } catch (err) {
             errorDiv.textContent = "Network error or server not available";
