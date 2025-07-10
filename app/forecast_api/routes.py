@@ -1,5 +1,5 @@
 from flask.views import MethodView
-from flask import request, jsonify, Blueprint
+from flask import request, jsonify, Blueprint, make_response
 from flask_jwt_extended import jwt_required, get_jwt_identity, verify_jwt_in_request
 from models.user import User
 from models.forecast import Forecast
@@ -151,7 +151,11 @@ def add_location():
 @bp.route('/userinfo')
 @jwt_required()
 def user_info():
-    user_id = get_jwt_identity()
-    user = User.query.filter_by(id=user_id).first()
+    #user_id = get_jwt_identity()
+    #user = User.query.filter_by(id=user_id).first()
 
-    return jsonify(to_dict(user)), 200
+    #return jsonify(to_dict(user)), 200
+    resp = make_response({"user": "demo"})
+    resp.headers['Access-Control-Allow-Origin'] = 'https://yuri0303.github.io'
+    resp.headers['Access-Control-Allow-Credentials'] = 'true'
+    return resp
