@@ -1,5 +1,5 @@
 from flask.views import MethodView
-from flask import request, jsonify, Blueprint, make_response
+from flask import request, jsonify, Blueprint
 from flask_jwt_extended import jwt_required, get_jwt_identity, verify_jwt_in_request
 from models.user import User
 from models.forecast import Forecast
@@ -13,11 +13,6 @@ bp = Blueprint('forecast', __name__, url_prefix='/api')
 
 class ForecastView(MethodView):
     def get(self):
-        resp = make_response({"user": "demo"})
-        resp.headers['Access-Control-Allow-Origin'] = 'https://yuri0303.github.io'
-        resp.headers['Access-Control-Allow-Credentials'] = 'true'
-        return resp
-
         try:
             verify_jwt_in_request(optional=True)
             user_id = get_jwt_identity()
