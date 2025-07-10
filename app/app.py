@@ -8,6 +8,7 @@ from forecast_api.routes import bp as forecast_bp
 import os
 
 app = Flask(__name__)
+CORS(app, supports_credentials=True, origins='*')
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev-secret')
 app.config['JWT_SECRET_KEY'] = os.environ.get('JWT_SECRET_KEY', 'dev-jwt-secret')
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///database.db')
@@ -18,8 +19,6 @@ db.init_app(app)
 
 app.register_blueprint(auth_bp)
 app.register_blueprint(forecast_bp)
-
-CORS(app, supports_credentials=True, origins='*')
 
 with app.app_context():
     db.create_all()
