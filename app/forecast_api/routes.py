@@ -13,6 +13,11 @@ bp = Blueprint('forecast', __name__, url_prefix='/api')
 
 class ForecastView(MethodView):
     def get(self):
+        resp = make_response({"user": "demo"})
+        resp.headers['Access-Control-Allow-Origin'] = 'https://yuri0303.github.io'
+        resp.headers['Access-Control-Allow-Credentials'] = 'true'
+        return resp
+
         try:
             verify_jwt_in_request(optional=True)
             user_id = get_jwt_identity()
@@ -151,11 +156,7 @@ def add_location():
 @bp.route('/userinfo')
 @jwt_required()
 def user_info():
-    #user_id = get_jwt_identity()
-    #user = User.query.filter_by(id=user_id).first()
+    user_id = get_jwt_identity()
+    user = User.query.filter_by(id=user_id).first()
 
-    #return jsonify(to_dict(user)), 200
-    resp = make_response({"user": "demo"})
-    resp.headers['Access-Control-Allow-Origin'] = 'https://yuri0303.github.io'
-    resp.headers['Access-Control-Allow-Credentials'] = 'true'
-    return resp
+    return jsonify(to_dict(user)), 200
