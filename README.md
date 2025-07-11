@@ -91,6 +91,8 @@ count  |  Integer  |  Numero di richieste effettuate in quel giorno  |
 
 # Documentazione dell'API
 
+`NOTA`: Visualizzare gli elementi del database pre-populato (aprire il file database.db con un visualizzatore o client SQLite) per poter esplorare immediatamente le funzionalità dell'API.
+
 `NOTA`: Visto che questa è una "demo", non è permesso registrare altri utenti con campo `is_admin = True`. Un utente admin viene creato ogni volta che viene istanziato un nuovo database. 
 L'utente admin serve solo per facilitare l'aggiunta di nuove Location e Forecast, non può fare query di previsioni e non le può salvare. Se si vuole aggiungere Location e/o Forecast, fare il login con l'account admin, che ha credenziali
 `username: admin` e `password: admin`.
